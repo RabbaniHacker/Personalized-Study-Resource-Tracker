@@ -1,11 +1,79 @@
-export default function BoardCard({ board, openBoard }) {
+import { useState } from "react";
+
+export default function BoardCard({ board, onDelete, onEdit }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(board.name);
+  const [desc, setDesc] = useState(board.description);
+
+  // Go to resource page
+  const openBoard = () => {
+    localStorage.setItem("currentBoard", JSON.stringify(board));
+    window.location.href = "/resources"; 
+  };
+
   return (
-    <div
-      onClick={() => openBoard(board)}
-      className="p-6 bg-gray-800 rounded-xl shadow-lg border border-gray-700 hover:border-blue-400 hover:shadow-blue-500/30 transition cursor-pointer"
-    >
-      <h2 className="text-xl font-semibold">{board.title}</h2>
-      <p className="text-gray-400 mt-2">{board.description}</p>
+    <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-400 transition">
+      {isEditing ? (
+        <>
+          <input
+            className="input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <textarea
+            className="input mt-3"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          />
+
+          <div className="flex gap-3 mt-4">
+            <button
+              className="px-4 py-2 bg-gray-600 rounded-lg"
+              onClick={() => setIsEditing(false)}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-4 py-2 bg-blue-600 rounded-lg"
+              onClick={() => {
+                onEdit(board.id, name, desc);
+                setIsEditing(false);
+              }}
+            >
+              Save
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <h3 className="text-xl font-semibold">{board.name}</h3>
+          <p className="text-gray-400 mt-2">{board.description}</p>
+
+          <div className="flex justify-end gap-3 mt-4">
+            <button
+              className="px-3 py-1 bg-gray-600 rounded-lg"
+              onClick={() => setIsEditing(true)}
+            >
+              Edit
+            </button>
+
+            <button
+              className="px-3 py-1 bg-red-600 rounded-lg"
+              onClick={onDelete}
+            >
+              Delete
+            </button>
+
+            <button
+              className="px-3 py-1 bg-blue-600 rounded-lg"
+              onClick={openBoard}
+            >
+              Open
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
